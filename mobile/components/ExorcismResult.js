@@ -31,7 +31,7 @@ export const ExorcismResult = ({ token, score, onDone }) => {
                 </View>
 
                 <Image
-                    source={require('../assets/logo-bright.svg')}
+                    source={require('../assets/logo-bright.png')}
                     style={{ width: 40, height: 40, marginTop: 30, opacity: 0.8 }}
                 />
                 <Text style={styles.footerText}>DUST DEMON HUNTERS • 2026</Text>

@@ -101,8 +101,22 @@ export default function App() {
   }
 
   const renderContent = () => {
+    // LOADING STATE GUARD
+    if (loadingAssets) {
+      return (
+        <View style={[retroStyles.container, { justifyContent: 'center' }]}>
+          <ActivityIndicator color="#5b21b6" size="large" />
+          <Text style={[retroStyles.pixelText, { marginTop: 20 }]}>SCANNING MONOLITH...</Text>
+        </View>
+      );
+    }
+
     switch (appState) {
       case APP_STATE.CHARACTER_SELECT:
+        if (!wallet) {
+          setAppState(APP_STATE.HOME);
+          return null;
+        }
         return (
           <CharacterSelect onSelect={(char, map) => {
             setCharacter(char);
@@ -112,8 +126,13 @@ export default function App() {
         );
 
       case APP_STATE.GAMEPLAY:
+        // DEFENSIVE GUARDS: Ensure we have necessary data before rendering engine
+        if (!wallet || !character || !activeMap) {
+          setAppState(APP_STATE.HOME);
+          return null;
+        }
         return (
-          <GameMap mapId={activeMap?.id}>
+          <GameMap mapId={activeMap.id}>
             <ShooterEngine
               character={character}
               assets={assets}
@@ -128,7 +147,6 @@ export default function App() {
               token={selectedEnemy}
               onCancel={() => setModalVisible(false)}
               onBurn={() => {
-                console.log('BURN INITIATED VIA MWA');
                 setModalVisible(false);
                 setAppState(APP_STATE.RESULT);
               }}
@@ -143,6 +161,10 @@ export default function App() {
         );
 
       case APP_STATE.RESULT:
+        if (!selectedEnemy) {
+          setAppState(APP_STATE.HOME);
+          return null;
+        }
         return (
           <ExorcismResult
             token={selectedEnemy}
@@ -156,7 +178,7 @@ export default function App() {
           <View style={{ flex: 1 }}>
             <View style={{ alignItems: 'center', marginBottom: 30, marginTop: 40 }}>
               <Image
-                source={require('./assets/icon.jpg')}
+                source={require('./assets/icon.png')}
                 style={{ width: 120, height: 120, borderRadius: 60, marginBottom: 20, borderWidth: 3, borderColor: '#5b21b6' }}
               />
               <Text style={retroStyles.pixelTextBold}>DUST DEMONS</Text>
@@ -175,13 +197,8 @@ export default function App() {
                   <TouchableOpacity
                     style={retroStyles.pixelButton}
                     onPress={startMissionFlow}
-                    disabled={loadingAssets}
                   >
-                    {loadingAssets ? (
-                      <ActivityIndicator color="#fff" size="small" />
-                    ) : (
-                      <Text style={retroStyles.pixelButtonText}>START MISSION</Text>
-                    )}
+                    <Text style={retroStyles.pixelButtonText}>START MISSION</Text>
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -207,7 +224,7 @@ export default function App() {
             <Text style={[retroStyles.pixelText, { marginBottom: 0, fontSize: 8, color: '#666' }]}>
               SOL*P9 MONOLITH HACKATHON.EXE
             </Text>
-            <Image source={require('./assets/logo-bright.svg')} style={{ width: 16, height: 16, opacity: 0.5 }} />
+            <Image source={require('./assets/logo-bright.png')} style={{ width: 16, height: 16, opacity: 0.5 }} />
           </View>
         </View>
       </SafeAreaView>

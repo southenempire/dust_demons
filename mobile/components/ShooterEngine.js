@@ -16,6 +16,7 @@ export const ShooterEngine = ({ onKill, character, assets = [], onScoreUpdate })
     const [lastHitTime, setLastHitTime] = useState(0);
     const [vortexCharge, setVortexCharge] = useState(0);
     const [isGlitching, setIsGlitching] = useState(false);
+    const [announcement, setAnnouncement] = useState(null);
 
     // Spawn an enemy every 3 seconds
     useEffect(() => {
