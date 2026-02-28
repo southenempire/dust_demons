@@ -3,10 +3,10 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Animated }
 import { retroStyles } from '../styles';
 
 const CHARACTERS = [
-    { id: 'hunter', name: 'YIELD HUNTER', image: require('../assets/ship_hunter.png'), weapon: 'Jup-Beam x2', ability: 'SOL_RENT_RECLAIMER', perk: 'Detects hidden SOL rent locked in dormant accounts. +10% yield on reclaimed rent.' },
-    { id: 'lord', name: 'DEMON LORD', image: require('../assets/ship_lord.png'), weapon: 'Void Railgun', ability: 'HACKATHON_OVERRIDE', perk: 'Instantly burns rugpull tokens. 2x XP multiplier for any verified burn.' },
-    { id: 'collector', name: 'DUST COLLECTOR', image: require('../assets/ship_collector.png'), weapon: 'Vacuum 3000', perk: 'Automatically sweeps tokens worth < 0.01 SOL. Infinite scanning range.' },
-    { id: 'prophet', name: 'MARKET PROPHET', image: require('../assets/ship_prophet.png'), weapon: 'Crystal Glitch', ability: 'PRECOGNITION', perk: 'Shows Jupiter Price API v3 delta before swap. 100% swap slip protection.' },
+    { id: 'hunter', name: 'YIELD HUNTER', image: require('../assets/ship_hunter_final.png'), weapon: 'Jup-Beam x2', ability: 'SOL_RENT_RECLAIMER', perk: 'Detects hidden SOL rent locked in dormant accounts. +10% yield on reclaimed rent.' },
+    { id: 'lord', name: 'DEMON LORD', image: require('../assets/ship_lord_final.png'), weapon: 'Void Railgun', ability: 'HACKATHON_OVERRIDE', perk: 'Instantly burns rugpull tokens. 2x XP multiplier for any verified burn.' },
+    { id: 'collector', name: 'DUST COLLECTOR', image: require('../assets/ship_collector_final.png'), weapon: 'Vacuum 3000', perk: 'Automatically sweeps tokens worth < 0.01 SOL. Infinite scanning range.' },
+    { id: 'prophet', name: 'MARKET PROPHET', image: require('../assets/ship_prophet_final.png'), weapon: 'Crystal Glitch', ability: 'PRECOGNITION', perk: 'Shows Jupiter Price API v3 delta before swap. 100% swap slip protection.' },
 ];
 
 const MAPS = [
@@ -24,7 +24,15 @@ export const CharacterSelect = ({ onSelect }) => {
             <Text style={[retroStyles.pixelTextBold, { fontSize: 16 }]}>PREPARE MISSION</Text>
 
             <View style={styles.previewContainer}>
-                <Image source={selectedChar.image} style={styles.previewImage} resizeMode="contain" />
+                <Image
+                    source={selectedChar.image}
+                    style={[
+                        styles.previewImage,
+                        selectedChar.id === 'prophet' && { transform: [{ rotate: '90deg' }] },
+                        selectedChar.id === 'collector' && { transform: [{ rotate: '180deg' }] }
+                    ]}
+                    resizeMode="contain"
+                />
                 <View style={styles.statsContainer}>
                     <Text style={styles.statsText}>{selectedChar.name}</Text>
                     <View style={styles.abilityBadge}>
@@ -45,7 +53,14 @@ export const CharacterSelect = ({ onSelect }) => {
                         onPress={() => setSelectedChar(char)}
                         style={[styles.charCard, selectedChar.id === char.id && styles.selectedCard]}
                     >
-                        <Image source={char.image} style={styles.cardImage} />
+                        <Image
+                            source={char.image}
+                            style={[
+                                styles.cardImage,
+                                char.id === 'prophet' && { transform: [{ rotate: '90deg' }] },
+                                char.id === 'collector' && { transform: [{ rotate: '180deg' }] }
+                            ]}
+                        />
                     </TouchableOpacity>
                 ))}
             </ScrollView>

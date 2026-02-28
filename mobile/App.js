@@ -5,7 +5,7 @@ if (typeof global.Buffer === 'undefined') {
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, StatusBar, Image, ActivityIndicator, Animated, StyleSheet } from 'react-native';
-import { Ghost, Crosshair } from 'lucide-react-native';
+import { Ghost } from 'lucide-react-native';
 import { transact } from '@solana-mobile/mobile-wallet-adapter-protocol-web3js';
 import { useFonts, PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import * as SplashScreen from 'expo-splash-screen';
@@ -158,12 +158,12 @@ export default function App() {
               }}
               onScoreUpdate={setGameScore}
             />
-            {/* ABORT BUTTON - Layered behind gameplay by being absolute but not covering the whole screen */}
+            {/* ABORT BUTTON - Restored to subtle bottom position */}
             <TouchableOpacity
-              style={[retroStyles.pixelButton, { position: 'absolute', bottom: 40, alignSelf: 'center', width: '50%', opacity: 0.6, zIndex: 5 }]}
+              style={[retroStyles.pixelButton, { position: 'absolute', bottom: 10, alignSelf: 'center', width: 80, padding: 8, opacity: 0.3, zIndex: 1 }]}
               onPress={() => setAppState(APP_STATE.HOME)}
             >
-              <Text style={retroStyles.pixelButtonText}>ABORT</Text>
+              <Text style={[retroStyles.pixelButtonText, { fontSize: 8 }]}>ABORT</Text>
             </TouchableOpacity>
             <ExorcismModal
               visible={modalVisible}
@@ -206,7 +206,7 @@ export default function App() {
 
             <View style={styles.mainDisplay}>
               <Image
-                source={require('./assets/hero_ship.png')}
+                source={require('./assets/ship_hunter_final.png')}
                 style={styles.heroShipSplash}
               />
               <Animated.View style={[styles.uplinkPulse, { transform: [{ scale: pulseAnim }] }]}>
@@ -310,7 +310,9 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     marginBottom: 40,
-    opacity: 0.8,
+    opacity: 0.9,
+    borderRadius: 100, // Circular mask for splash
+    backgroundColor: '#000',
   },
   uplinkPulse: {
     alignItems: 'center',

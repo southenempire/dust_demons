@@ -84,12 +84,6 @@ export const CRTOverlay = ({ children }) => {
                 pointerEvents="none"
             />
 
-            {/* Vignette effect */}
-            <LinearGradient
-                colors={['transparent', 'rgba(0,0,0,0.4)']}
-                style={styles.vignette}
-                pointerEvents="none"
-            />
         </View>
     );
 };

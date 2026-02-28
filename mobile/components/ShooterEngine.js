@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, TouchableOpacity, Animated, Dimensions, Text, Image } from 'react-native';
-import { Ghost, Crosshair } from 'lucide-react-native';
+import { Ghost } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { ImpactText } from './ImpactText';
 
@@ -27,13 +27,18 @@ export const ShooterEngine = ({ onKill, character, assets = [], onScoreUpdate })
 
     // Handle screen press for movement
     const handleScreenPress = (event) => {
-        const { locationX } = event.nativeEvent;
-        Animated.spring(shipX, {
-            toValue: Math.max(0, Math.min(width - 120, locationX - 60)),
-            useNativeDriver: true,
-            friction: 7,
-            tension: 40,
-        }).start();
+        // Use pageX as fallback for locationX which is sometimes undefined on web
+        const { locationX, pageX } = event.nativeEvent;
+        const targetX = locationX !== undefined ? locationX : pageX;
+
+        if (targetX !== undefined) {
+            Animated.spring(shipX, {
+                toValue: Math.max(0, Math.min(width - 120, targetX - 60)),
+                useNativeDriver: false, // Safer for web environment
+                friction: 7,
+                tension: 40,
+            }).start();
+        }
     };
 
     // Spawn an enemy every 2 seconds
@@ -208,7 +213,7 @@ export const ShooterEngine = ({ onKill, character, assets = [], onScoreUpdate })
                         <Text style={styles.vortexText}>VORTEX: {vortexCharge}%</Text>
                         <View style={[styles.vortexProgressBar, { width: `${vortexCharge}%` }]} />
                     </TouchableOpacity>
-                    <Text style={[styles.hudText, { color: '#8b5cf6' }]}>HUNTER: {character?.name}</Text>
+                    <Text style={[styles.hudText, { color: '#8b5cf6' }]}>PILOT: {character?.name}</Text>
                 </View>
 
                 {enemies.map((enemy) => {
@@ -224,11 +229,10 @@ export const ShooterEngine = ({ onKill, character, assets = [], onScoreUpdate })
                         >
                             <TouchableOpacity onPress={() => handleShoot(enemy)} activeOpacity={0.5}>
                                 <View style={styles.enemyContent}>
-                                    {enemy.isBoss ? (
-                                        <Image source={require('../assets/boss_demon.png')} style={{ width: 80, height: 80 }} />
-                                    ) : (
-                                        <Ghost color="#a855f7" size={40} />
-                                    )}
+                                    <Image
+                                        source={enemy.isBoss ? require('../assets/boss_demon.png') : require('../assets/demon_enemy_final.png')}
+                                        style={enemy.isBoss ? { width: 80, height: 80 } : { width: 40, height: 40 }}
+                                    />
                                     <View style={styles.tokenLabel}>
                                         <Text style={styles.tokenText}>{enemy.tokenName}</Text>
                                     </View>
@@ -255,17 +259,21 @@ export const ShooterEngine = ({ onKill, character, assets = [], onScoreUpdate })
                 ))}
 
                 {/* HERO SHIP */}
-                <Animated.View style={[styles.shipContainer, { transform: [{ translateX: shipX }], zIndex: 10 }]}>
+                <Animated.View style={[
+                    styles.shipContainer,
+                    { transform: [{ translateX: shipX }], zIndex: 10 }
+                ]}>
                     <Image
-                        source={character?.image || require('../assets/ship_hunter.png')}
-                        style={styles.heroShip}
+                        source={character?.image || require('../assets/ship_hunter_final.png')}
+                        style={[
+                            styles.heroShip,
+                            character?.id === 'prophet' && { transform: [{ rotate: '90deg' }] },
+                            character?.id === 'collector' && { transform: [{ rotate: '180deg' }] }
+                        ]}
                         resizeMode="contain"
                     />
                 </Animated.View>
 
-                <View style={styles.crosshairContainer} pointerEvents="none">
-                    <Crosshair color="rgba(0, 255, 0, 0.2)" size={100} />
-                </View>
             </View>
         </TouchableOpacity>
     );
@@ -295,8 +303,11 @@ const styles = StyleSheet.create({
     },
     hudText: {
         fontFamily: 'PressStart2P',
-        fontSize: 10,
+        fontSize: 10, // Restored to 10
         color: '#fff',
+        textShadowColor: 'rgba(0,0,0,0.8)',
+        textShadowOffset: { width: 2, height: 2 },
+        textShadowRadius: 2,
     },
     vortexBtn: {
         backgroundColor: '#333',
@@ -331,13 +342,19 @@ const styles = StyleSheet.create({
     shipContainer: {
         position: 'absolute',
         bottom: 50,
-        width: 120,
+        width: 110, // Slightly smaller than image to force-clip edges
+        height: 110,
         alignItems: 'center',
+        justifyContent: 'center',
         left: 0,
+        borderRadius: 55,
+        overflow: 'hidden',
+        backgroundColor: '#000', // Solid blend
     },
     heroShip: {
         width: 120,
         height: 120,
+        borderRadius: 60, // Specific image clip
     },
     particle: {
         position: 'absolute',
@@ -354,6 +371,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         alignItems: 'center',
         justifyContent: 'center',
+        borderRadius: 40, // Clip enemy black box
+        overflow: 'hidden',
     },
     enemyContent: {
         alignItems: 'center',
@@ -368,11 +387,9 @@ const styles = StyleSheet.create({
     tokenText: {
         color: '#0f0',
         fontFamily: 'PressStart2P',
-        fontSize: 8,
-    },
-    crosshairContainer: {
-        ...StyleSheet.absoluteFillObject,
-        alignItems: 'center',
-        justifyContent: 'center',
+        fontSize: 10, // Increased from 8
+        textShadowColor: 'rgba(0,0,0,0.9)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 2,
     },
 });
