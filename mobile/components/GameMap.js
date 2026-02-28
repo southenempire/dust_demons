@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Skull, Zap, Ghost } from 'lucide-react-native';
 
@@ -7,22 +7,22 @@ export const GAME_MAPS = {
     GRAVEYARD: {
         id: 'GRAVEYARD',
         name: 'THE GRAVEYARD',
-        colors: ['#000', '#2d004d'],
-        icon: <Skull color="rgba(255,255,255,0.1)" size={200} />,
+        colors: ['#000', '#1a0b2e'],
+        bgImage: require('../assets/graveyard_wide.png'),
         overlayColor: 'rgba(91, 33, 182, 0.1)',
     },
     CORE: {
         id: 'CORE',
         name: 'THE CORE',
         colors: ['#000', '#004d1a'],
-        icon: <Zap color="rgba(0,255,0,0.1)" size={200} />,
+        bgImage: require('../assets/core_bg.png'),
         overlayColor: 'rgba(0, 255, 0, 0.05)',
     },
     VOID: {
         id: 'VOID',
         name: 'THE VOID',
         colors: ['#000', '#111'],
-        icon: <Ghost color="rgba(255,0,255,0.1)" size={200} />,
+        bgImage: require('../assets/void_bg.png'),
         overlayColor: 'rgba(255, 0, 255, 0.05)',
     }
 };
@@ -36,6 +36,14 @@ export const GameMap = ({ mapId, children }) => {
                 colors={activeMap.colors}
                 style={StyleSheet.absoluteFill}
             />
+
+            {activeMap.bgImage && (
+                <Image
+                    source={activeMap.bgImage}
+                    style={[StyleSheet.absoluteFill, { opacity: 0.9, width: '100%', height: '100%' }]}
+                    resizeMode="cover"
+                />
+            )}
 
             <View style={styles.iconOverlay}>
                 {activeMap.icon}

@@ -42,17 +42,12 @@ export const CRTOverlay = ({ children }) => {
             Animated.sequence([
                 Animated.timing(flickerAnim, {
                     toValue: 1,
-                    duration: 100,
+                    duration: 2000,
                     useNativeDriver: true,
                 }),
                 Animated.timing(flickerAnim, {
-                    toValue: 0.8,
-                    duration: 150,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(flickerAnim, {
-                    toValue: 0.9,
-                    duration: 50,
+                    toValue: 0.5,
+                    duration: 3000,
                     useNativeDriver: true,
                 }),
             ])
@@ -82,7 +77,7 @@ export const CRTOverlay = ({ children }) => {
                     {
                         opacity: flickerAnim.interpolate({
                             inputRange: [0, 1],
-                            outputRange: [0.03, 0.08]
+                            outputRange: [0.01, 0.03]
                         })
                     }
                 ]}
@@ -107,12 +102,12 @@ const styles = StyleSheet.create({
     scanlines: {
         ...StyleSheet.absoluteFillObject,
         zIndex: 100,
-        opacity: 0.15,
+        opacity: 0.08, // More subtle
     },
     scanline: {
         height: 1,
         backgroundColor: '#000',
-        marginBottom: 4,
+        marginBottom: 3, // Tighter lines
     },
     flicker: {
         ...StyleSheet.absoluteFillObject,

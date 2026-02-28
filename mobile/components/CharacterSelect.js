@@ -3,10 +3,10 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Animated }
 import { retroStyles } from '../styles';
 
 const CHARACTERS = [
-    { id: 'lord', name: 'DEMON LORD', image: require('../assets/characters/achievement_demon_lord.png'), weapon: 'Void Railgun', perk: '2x Burn Speed' },
-    { id: 'hunter', name: 'YIELD HUNTER', image: require('../assets/characters/achievement_yield_hunter.png'), weapon: 'Jup-Beam', perk: '+5% APY' },
-    { id: 'collector', name: 'DUST COLLECTOR', image: require('../assets/characters/achievement_dust_collector.png'), weapon: 'Vacuum 3000', perk: 'Auto-Scan' },
-    { id: 'prophet', name: 'MARKET PROPHET', image: require('../assets/characters/achievement_prophet.png'), weapon: 'Crystal Glitch', perk: 'Price Prediction' },
+    { id: 'hunter', name: 'YIELD HUNTER', image: require('../assets/ship_hunter.png'), weapon: 'Jup-Beam x2', ability: 'SOL_RENT_RECLAIMER', perk: 'Detects hidden SOL rent locked in dormant accounts. +10% yield on reclaimed rent.' },
+    { id: 'lord', name: 'DEMON LORD', image: require('../assets/ship_lord.png'), weapon: 'Void Railgun', ability: 'HACKATHON_OVERRIDE', perk: 'Instantly burns rugpull tokens. 2x XP multiplier for any verified burn.' },
+    { id: 'collector', name: 'DUST COLLECTOR', image: require('../assets/ship_collector.png'), weapon: 'Vacuum 3000', perk: 'Automatically sweeps tokens worth < 0.01 SOL. Infinite scanning range.' },
+    { id: 'prophet', name: 'MARKET PROPHET', image: require('../assets/ship_prophet.png'), weapon: 'Crystal Glitch', ability: 'PRECOGNITION', perk: 'Shows Jupiter Price API v3 delta before swap. 100% swap slip protection.' },
 ];
 
 const MAPS = [
@@ -24,10 +24,16 @@ export const CharacterSelect = ({ onSelect }) => {
             <Text style={[retroStyles.pixelTextBold, { fontSize: 16 }]}>PREPARE MISSION</Text>
 
             <View style={styles.previewContainer}>
-                <Image source={selectedChar.image} style={styles.previewImage} />
+                <Image source={selectedChar.image} style={styles.previewImage} resizeMode="contain" />
                 <View style={styles.statsContainer}>
                     <Text style={styles.statsText}>{selectedChar.name}</Text>
-                    <Text style={styles.subStatsText}>{selectedChar.weapon} • {selectedChar.perk}</Text>
+                    <View style={styles.abilityBadge}>
+                        <Text style={styles.abilityLabel}>{selectedChar.ability || 'CORE_SYSTEM'}</Text>
+                    </View>
+                    <Text style={styles.subStatsText}>{selectedChar.weapon}</Text>
+                    <View style={styles.perkBox}>
+                        <Text style={styles.perkText}>{selectedChar.perk}</Text>
+                    </View>
                 </View>
             </View>
 
@@ -52,8 +58,8 @@ export const CharacterSelect = ({ onSelect }) => {
                         onPress={() => setSelectedMap(map)}
                         style={[styles.mapCard, selectedMap.id === map.id && styles.selectedMapCard]}
                     >
-                        <View style={[styles.mapColorPreview, { backgroundColor: map.colors[1] }]} />
-                        <Text style={styles.mapName}>{map.name.split(' ')[1] || map.name}</Text>
+                        <View style={[styles.mapOrb, { backgroundColor: map.colors[1] }]} />
+                        <Text style={[styles.mapName, selectedMap.id === map.id && { color: '#f0f', textShadowRadius: 10 }]}>{map.name}</Text>
                     </TouchableOpacity>
                 ))}
             </ScrollView>
@@ -71,23 +77,21 @@ export const CharacterSelect = ({ onSelect }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        padding: 10,
+        width: '100%',
         alignItems: 'center',
-        justifyContent: 'center',
+        alignSelf: 'stretch',
     },
     previewContainer: {
         alignItems: 'center',
         marginVertical: 40,
-        backgroundColor: '#0a0a0a',
-        borderWidth: 2,
-        borderColor: '#5b21b6',
+        backgroundColor: 'transparent',
         padding: 20,
         width: '100%',
-        borderRadius: 4,
     },
     previewImage: {
-        width: 150,
-        height: 150,
+        width: 180,
+        height: 180,
         marginBottom: 20,
     },
     statsContainer: {
@@ -117,42 +121,70 @@ const styles = StyleSheet.create({
         maxHeight: 100,
     },
     charCard: {
-        marginHorizontal: 10,
-        borderWidth: 2,
-        borderColor: '#333',
-        padding: 10,
-        borderRadius: 4,
+        marginHorizontal: 15,
+        padding: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     selectedCard: {
-        borderColor: '#0f0',
-        backgroundColor: 'rgba(0, 255, 0, 0.1)',
+        transform: [{ scale: 1.2 }],
     },
     cardImage: {
-        width: 60,
-        height: 60,
+        width: 70,
+        height: 70,
     },
     mapCard: {
-        marginHorizontal: 10,
-        borderWidth: 2,
-        borderColor: '#333',
-        padding: 10,
-        borderRadius: 4,
-        width: 100,
+        marginHorizontal: 15,
         alignItems: 'center',
+        justifyContent: 'center',
+        width: 80,
     },
-    selectedMapCard: {
-        borderColor: '#a855f7',
-        backgroundColor: 'rgba(168, 85, 247, 0.1)',
-    },
-    mapColorPreview: {
-        width: '100%',
-        height: 30,
+    mapOrb: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
         marginBottom: 10,
-        borderRadius: 2,
+        borderWidth: 2,
+        borderColor: 'rgba(255,255,255,0.1)',
+        shadowColor: '#fff',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.5,
+        shadowRadius: 10,
     },
     mapName: {
         fontFamily: 'PressStart2P',
+        fontSize: 6,
+        color: '#666',
+        textAlign: 'center',
+    },
+    selectedMapCard: {
+        transform: [{ scale: 1.2 }],
+    },
+    abilityBadge: {
+        backgroundColor: '#f0f2',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderWidth: 1,
+        borderColor: '#f0f',
+        marginTop: 5,
+        borderRadius: 2,
+    },
+    abilityLabel: {
+        color: '#f0f',
+        fontFamily: 'PressStart2P',
         fontSize: 8,
-        color: '#fff',
+    },
+    perkBox: {
+        marginTop: 15,
+        borderLeftWidth: 2,
+        borderLeftColor: '#0f0',
+        paddingLeft: 10,
+        width: '100%',
+    },
+    perkText: {
+        color: '#666',
+        fontFamily: 'PressStart2P',
+        fontSize: 7,
+        lineHeight: 12,
     },
 });

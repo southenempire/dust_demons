@@ -6,39 +6,62 @@ import * as Haptics from 'expo-haptics';
 import { ImpactText } from './ImpactText';
 
 export const ExorcismModal = ({ visible, token, onBurn, onCancel }) => {
+    const [isBurning, setIsBurning] = React.useState(false);
+
     React.useEffect(() => {
         if (visible) {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            setIsBurning(false);
         }
     }, [visible]);
+
+    const handleBurn = async () => {
+        setIsBurning(true);
+        await onBurn();
+        setIsBurning(false);
+    };
 
     if (!token) return null;
 
     return (
         <Modal visible={visible} transparent animationType="fade">
             <View style={styles.overlay}>
-                {visible && <ImpactText text="TARGET LOCKED" color="#f00" />}
+                {visible && !isBurning && <ImpactText text="TARGET LOCKED" color="#f00" />}
+                {isBurning && <ImpactText text="EXORCISING..." color="#ff0" />}
+
                 <View style={styles.modal}>
-                    <Text style={[retroStyles.pixelTextBold, { color: '#f00' }]}>DEMON DETECTED</Text>
+                    <Text style={[retroStyles.pixelTextBold, { color: isBurning ? '#ff0' : '#f00' }]}>
+                        {isBurning ? 'CHANNELING SOL' : 'DEMON DETECTED'}
+                    </Text>
 
                     <View style={styles.infoBox}>
                         <Text style={styles.tokenTitle}>{token.tokenName}</Text>
                         <Text style={styles.tokenAmount}>{token.amount} TOKENS</Text>
-                        <Text style={styles.solValue}>VALUE: ~0.002 SOL</Text>
+                        <Text style={styles.solValue}>RECLAIMING ~0.002 SOL</Text>
                     </View>
 
-                    <Text style={[styles.cautionText]}>
-                        PURGE THIS FILTH FROM THE MONOLITH?
-                    </Text>
+                    {!isBurning ? (
+                        <>
+                            <Text style={[styles.cautionText]}>
+                                PURGE THIS FILTH FROM THE MONOLITH?
+                            </Text>
 
-                    <TouchableOpacity style={[retroStyles.pixelButton, styles.burnButton]} onPress={onBurn}>
-                        <Flame color="#fff" size={20} style={{ marginRight: 10 }} />
-                        <Text style={retroStyles.pixelButtonText}>EXORCISE (BURN)</Text>
-                    </TouchableOpacity>
+                            <TouchableOpacity style={[retroStyles.pixelButton, styles.burnButton]} onPress={handleBurn}>
+                                <Flame color="#fff" size={20} style={{ marginRight: 10 }} />
+                                <Text style={retroStyles.pixelButtonText}>EXORCISE (BURN)</Text>
+                            </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.cancelLink} onPress={onCancel}>
-                        <Text style={styles.cancelText}>SPARE DEMON</Text>
-                    </TouchableOpacity>
+                            <TouchableOpacity style={styles.cancelLink} onPress={onCancel}>
+                                <Text style={styles.cancelText}>SPARE DEMON</Text>
+                            </TouchableOpacity>
+                        </>
+                    ) : (
+                        <View style={{ padding: 20 }}>
+                            <Text style={[retroStyles.pixelText, { fontSize: 8, color: '#aaa', textAlign: 'center' }]}>
+                                COMMUNICATING WITH BLOCKCHAIN...
+                            </Text>
+                        </View>
+                    )}
                 </View>
             </View>
         </Modal>
